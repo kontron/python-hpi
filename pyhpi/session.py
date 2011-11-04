@@ -3,7 +3,7 @@ import logging
 from sahpi import *
 from resource import Resource
 from domain import UNSPECIFIED_DOMAIN
-from rpt import RptEntry
+from resource import RptEntry
 
 logger = logging.getLogger(__name__)
 
@@ -27,17 +27,22 @@ class Session(object):
         saHpiDomainInfoGet(self, byref(info))
         return info
 
-    def rpt_entries(self):
+    def get_rpt_entry_by_resource(self, res):
+        entry = SaHpiRptEntryT()
+        saHpiEntryGetByResourceId(self, res, byref(entry))
+        return RptEntry().from_ctype(entry)
+
+    def resources(self):
         id = SaHpiEntryIdT(SAHPI_FIRST_ENTRY)
         nextid = SaHpiEntryIdT()
         while id.value != SAHPI_LAST_ENTRY:
             entry = SaHpiRptEntryT()
             saHpiRptEntryGet(self, id, byref(nextid), byref(entry))
-            yield  RptEntry().from_ctype(entry)
+            yield Resource(self).from_rpt(RptEntry().from_ctype(entry))
             id.value = nextid.value
 
-    def get_rpt_entries(self):
-        return list(self.rpt_entries())
+    def get_resources(self):
+        return list(self.resources())
 
     def get_resources_by_entity_path(self, path, instrument=None):
         resources = list()
@@ -68,7 +73,7 @@ class Session(object):
                 del resources[:]
                 instance_id.value = SAHPI_FIRST_ENTRY
 
-            resources.append(Resource(resource_id.value, self))
+            resources.append(Resource(self).from_id(resource_id.value))
             last_upd_cnt = upd_cnt
 
         return resources

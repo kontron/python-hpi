@@ -2117,12 +2117,40 @@ sahpi_functions = (
             (SaHpiDomainInfoT, '*DomainInfo'),
         ]
     ),
+    # Resource presence table
     ('saHpiRptEntryGet',
         [
             (SaHpiSessionIdT, 'SessionId'),
             (SaHpiEntryIdT, 'EntryId'),
             (SaHpiEntryIdT, '*NextEntryId'),
             (SaHpiRptEntryT, '*RptEntry'),
+        ]
+    ),
+    ('saHpiRptEntryGetByResourceId',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiRptEntryT, '*RptEntry'),
+        ]
+    ),
+    ('saHpiResourceSeveritySet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiSeverityT, 'Severity'),
+        ]
+    ),
+    ('saHpiResourceTagSet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiTextBufferT, '*ResourceTag'),
+        ]
+    ),
+    ('saHpiMyEntityPathGet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiEntityPathT, '*EntityPath'),
         ]
     ),
     ('saHpiGetIdByEntityPath',
@@ -2134,6 +2162,111 @@ sahpi_functions = (
             (SaHpiResourceIdT, '*ResourceId'),
             (SaHpiInstrumentIdT, '*InstrumentId'),
             (SaHpiUint32T, '*RptUpdateCount'),
+        ]
+    ),
+    ('saHpiGetChildEntityPath',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiEntityPathT, 'ParentEntityPath'),
+            (SaHpiUint32T, '*InstanceId'),
+            (SaHpiEntityPathT, '*ChildEntityPath'),
+            (SaHpiUint32T, '*RptUpdateCount'),
+        ]
+    ),
+    ('saHpiResourceFailedRemove',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+        ]
+    ),
+    # Resource
+    ('saHpiRdrGet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiEntryIdT, 'EntryId'),
+            (SaHpiEntryIdT, '*NextEntryId'),
+            (SaHpiRdrT, '*Rdr'),
+        ]
+    ),
+    ('saHpiRdrGetByInstrumentId',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiRdrTypeT, 'RdrType'),
+            (SaHpiInstrumentIdT, 'InstrumentId'),
+            (SaHpiRdrT, '*Rdr'),
+        ]
+    ),
+    ('saHpiRdrUpdateCountGet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiUint32T, '*UpdateCount'),
+        ]
+    ),
+    # Dimi
+    ('saHpiDimiInfoGet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiDimiNumT, 'DimiNum'),
+            (SaHpiDimiInfoT, '*DimiInfo'),
+        ]
+    ),
+    ('saHpiDimiTestInfoGet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiDimiNumT, 'DimiNum'),
+            (SaHpiDimiTestNumT, 'TestNum'),
+            (SaHpiDimiTestT, '*DimiTest'),
+        ]
+    ),
+    ('saHpiDimiTestReadinessGet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiDimiNumT, 'DimiNum'),
+            (SaHpiDimiTestNumT, 'TestNum'),
+            (SaHpiDimiReadyT, '*DimiReady'),
+        ]
+    ),
+    ('saHpiDimiTestStart',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiDimiNumT, 'DimiNum'),
+            (SaHpiDimiTestNumT, 'TestNum'),
+            (SaHpiUint8T, 'NumberOfParameters'),
+            (SaHpiDimiTestVariableParamsT, '*ParamsList'),
+        ]
+    ),
+    ('saHpiDimiTestCancel',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiDimiNumT, 'DimiNum'),
+            (SaHpiDimiTestNumT, 'TestNum'),
+        ]
+    ),
+    ('saHpiDimiTestStatusGet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiDimiNumT, 'DimiNum'),
+            (SaHpiDimiTestNumT, 'TestNum'),
+            (SaHpiDimiTestPercentCompletedT, '*PercentCompleted'),
+            (SaHpiDimiTestRunStatusT, '*RunStatus'),
+        ]
+    ),
+    ('saHpiDimiTestResultsGet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiResourceIdT, 'ResourceId'),
+            (SaHpiDimiNumT, 'DimiNum'),
+            (SaHpiDimiTestNumT, 'TestNum'),
+            (SaHpiDimiTestResultsT, '*TestResults'),
         ]
     ),
     # Fumi
