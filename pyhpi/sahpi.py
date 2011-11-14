@@ -65,10 +65,17 @@ class Enumeration(c_int):
 # the c compiler.
 def _get_align(type):
     a = 0
+
+    # handle arrays correctly, use first element
+    if (issubclass(type, Array)):
+            type = type._type_
+
     if hasattr(type, '_align_'):
         a = max(a, type._align_)
     else:
         a = alignment(type)
+
+    # structures and unions
     if hasattr(type, '_fields_'):
         for n, t in type._fields_:
             a = max(a, _get_align(t))
