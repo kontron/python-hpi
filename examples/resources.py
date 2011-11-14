@@ -17,7 +17,7 @@ def dump_rdr(rdr, indent=0):
 
 def dump_dimi_test(dimi_test, indent=0):
     lines = [
-            'Test Name:              %(test_name)s',
+            'Test Name:              %(name)s',
             'Service Impact:         %(service_impact)d',
             'Need Service OS:        %(service_os_needed)s',
             'Expected Run Duration:  %(expected_run_duration)s',
@@ -70,7 +70,8 @@ Entity Path:             %(entity_path)s
             dump_rdr(rdr, 4)
             if isinstance(rdr, DimiRdr):
                 d = res.dimi_handler_by_rdr(rdr)
-                for test in d.test_list():
+                for (no, test) in enumerate(d.test_list()):
+                    print '      Test Number:            %d' % no
                     dump_dimi_test(test, 6)
                     print '      Parameters:'
                     for param in test.parameters:

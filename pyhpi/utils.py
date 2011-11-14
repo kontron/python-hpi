@@ -43,6 +43,9 @@ class TextBuffer(BaseHpiObject):
         self.type = s.DataType.value
         self.language = s.Language.value
         data = array('B', s.Data[:]).tostring()
+        pos = data.find('\x00')
+        if pos != -1:
+            data = data[:pos]
         if self.type == SAHPI_TL_TYPE_TEXT:
             self.data = data.decode('ascii')
         else:
@@ -62,6 +65,9 @@ class TextBuffer(BaseHpiObject):
         t.Data = (SaHpiUint8T * SAHPI_MAX_TEXT_BUFFER_LENGTH)(*data)
         return t
 
+    def __eq__(self, a):
+        return self.data == a
+
     def __str__(self):
         return self.data
 
@@ -80,4 +86,5 @@ class TextBuffer(BaseHpiObject):
 def enumeration_name(enum_cls, value):
     return enum_cls(value).name
 
+dimi_test_status_str = partial(enumeration_name, SaHpiDimiTestRunStatusT)
 fumi_upgrade_status_str = partial(enumeration_name, SaHpiFumiUpgradeStatusT)
