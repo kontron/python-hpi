@@ -35,7 +35,7 @@ def main():
 
         print 'Entity path is "%s"' % ep
         r = s.get_resources_by_entity_path(ep)[0]
-        f = r.get_fumi_handler(fumi_num=int(sys.argv[2]))
+        f = r.fumi_handler_by_num(fumi_num=int(sys.argv[2]))
         b = f.logical_bank()
 
         print 'Setting Source to "%s"' % (sys.argv[3],)

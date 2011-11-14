@@ -4,6 +4,7 @@ from sahpi import *
 from resource import Resource
 from domain import UNSPECIFIED_DOMAIN
 from resource import RptEntry
+from errors import SaHpiError
 
 logger = logging.getLogger(__name__)
 
@@ -37,11 +38,19 @@ class Session(object):
         nextid = SaHpiEntryIdT()
         while id.value != SAHPI_LAST_ENTRY:
             entry = SaHpiRptEntryT()
-            saHpiRptEntryGet(self, id, byref(nextid), byref(entry))
-            yield Resource(self).from_rpt(RptEntry().from_ctype(entry))
-            id.value = nextid.value
+            try:
+                saHpiRptEntryGet(self, id, byref(nextid), byref(entry))
+                yield Resource(self).from_rpt(RptEntry().from_ctype(entry))
+                id.value = nextid.value
+            except SaHpiError, e:
+                if (e.errno == SA_ERR_HPI_NOT_PRESENT
+                        and id.value == SAHPI_FIRST_ENTRY):
+                    # empty RPT
+                    break
+                else:
+                    raise
 
-    def get_resources(self):
+    def resources_list(self):
         return list(self.resources())
 
     def get_resources_by_entity_path(self, path, instrument=None):

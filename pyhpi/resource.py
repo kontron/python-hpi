@@ -2,6 +2,7 @@ from array import array
 
 from sahpi import *
 from fumi import Fumi
+from dimi import Dimi
 from utils import BaseHpiObject, TextBuffer
 from entity import EntityPath
 from errors import RetriesExceededError
@@ -92,17 +93,59 @@ class RptEntry(BaseHpiObject):
         return self
 
 
-class Rdr(BaseHpiObject):
+class CommonRdr(BaseHpiObject):
     def from_ctype(self, s):
         BaseHpiObject.from_ctype(self, s)
         self.record_id = s.RecordId
         self.rdr_type = s.RdrType.value
         self.entity = EntityPath().from_ctype(s.Entity)
         self.is_fru = bool(s.IsFru)
-        #('RdrTypeUnion', SaHpiRdrTypeUnionT),
         self.id_string = TextBuffer().from_ctype(s.IdString)
 
+
+class DimiRdr(CommonRdr):
+    __type__ = SAHPI_DIMI_RDR
+    def from_ctype(self, s):
+        CommonRdr.from_ctype(self, s)
+        if self.rdr_type != self.__type__:
+            raise DecodingError("RDR is no DIMI RDR")
+
+        rec = s.RdrTypeUnion.DimiRec
+        self.dimi_num = rec.DimiNum
+        self.oem = rec.Oem
+
         return self
+
+
+class FumiRdr(CommonRdr):
+    __type__ = SAHPI_FUMI_RDR
+    def from_ctype(self, s):
+        CommonRdr.from_ctype(self, s)
+        if self.rdr_type != SAHPI_FUMI_RDR:
+            raise DecodingError("RDR is no FUMI RDR")
+
+        rec = s.RdrTypeUnion.FumiRec
+        self.fumi_num = rec.Num
+        self.access_protocol = rec.AccessProt
+        self.capability = rec.Capability
+        self.num_banks = rec.NumBanks
+        self.oem = rec.Oem
+
+        return self
+
+
+class Rdr:
+    __types__ = [DimiRdr, FumiRdr]
+
+    def from_ctype(self, s):
+        """Creates an RDR class according the type field."""
+        cls = None
+        for cls in self.__types__:
+            if cls.__type__ == s.RdrType.value:
+                obj = cls()
+                obj.from_ctype(s)
+                return obj
+        raise DecodingError("No RDR for type %d found" % s.RdrType.value)
 
 
 class Resource(object):
@@ -112,11 +155,20 @@ class Resource(object):
         self._rdrs = None
         self._last_rdr_update_count = 0
 
-    def get_fumi_handler(self, fumi_num):
-        return Fumi(self.session, self, fumi_num)
-
     def __repr__(self):
         return 'Resource(id=%d)' % (self._as_parameter_.value,)
+
+    def fumi_handler_by_num(self, fumi_num):
+        return Fumi(self.session, self, fumi_num)
+
+    def fumi_handler_by_rdr(self, rdr):
+        return Fumi(self.session, self, rdr.fumi_num)
+
+    def dimi_handler_by_num(self, dimi_num):
+        return Dimi(self.session, self, dimi_num)
+
+    def dimi_handler_by_rdr(self, rdr):
+        return Dimi(self.session, self, rdr.dimi_num)
 
     def from_id(self, id):
         self._as_parameter_ = SaHpiResourceIdT(id)

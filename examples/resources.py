@@ -1,4 +1,40 @@
 from pyhpi import Session
+from pyhpi.resource import DimiRdr
+
+def print_lines_with_indent(lines, fmt_data, indent):
+    for line in lines:
+        print '%s%s' % (' '*indent, line % fmt_data)
+
+def dump_rdr(rdr, indent=0):
+    lines = [
+            'Record Id:              %(record_id)d',
+            'RDR Type:               %(rdr_type)s',
+            'RDR Entity Path:        %(entity)s',
+            'Is FRU:                 %(is_fru)s',
+            'Id String:              %(id_string)s',
+    ]
+    print_lines_with_indent(lines, rdr.__dict__, indent)
+
+def dump_dimi_test(dimi_test, indent=0):
+    lines = [
+            'Test Name:              %(test_name)s',
+            'Service Impact:         %(service_impact)d',
+            'Need Service OS:        %(service_os_needed)s',
+            'Expected Run Duration:  %(expected_run_duration)s',
+            'Capabilities:           %(capabilities)s',
+    ]
+    print_lines_with_indent(lines, dimi_test.__dict__, indent)
+
+def dump_dimi_test_parameters(param, indent=0):
+    lines = [
+            'Name:                   %(name)s',
+            'Info:                   %(info)s',
+            'Type:                   %(type)d',
+            'Default:                %(default)s',
+            'Min:                    %(min)s',
+            'Max:                    %(max)s'
+    ]
+    print_lines_with_indent(lines, param.__dict__, indent)
 
 def main():
     s = Session()
@@ -29,15 +65,19 @@ Entity Path:             %(entity_path)s
   Resource Tag:          %(resource_tag)s
 """[1:-1] % res.rpt.__dict__
 
-        print "  RDRs:"
+        print '  RDRs:'
         for rdr in res.rdrs():
-            print """
-    Record Id:           %(record_id)d
-    RDR Type:            %(rdr_type)s
-    RDR Entity Path:     %(entity)s
-    Is FRU:              %(is_fru)s
-    Id String:           %(id_string)s
-"""[1:-1] % rdr.__dict__
+            dump_rdr(rdr, 4)
+            if isinstance(rdr, DimiRdr):
+                d = res.dimi_handler_by_rdr(rdr)
+                for test in d.test_list():
+                    dump_dimi_test(test, 6)
+                    print '      Parameters:'
+                    for param in test.parameters:
+                        dump_dimi_test_parameters(param, 8)
+                        print ''
+                    print ''
+            print ''
 
     s.close()
 

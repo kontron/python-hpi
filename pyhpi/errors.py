@@ -13,3 +13,11 @@ class SaHpiError(Exception):
 class RetriesExceededError(Exception):
     """Maximum number of retries was exceeded."""
     pass
+
+class DecodingError(Exception):
+    """Error while decoding data."""
+    def __init__(self, error):
+        self.error = error
+
+    def __str__(self):
+        return '%s: %s' % (self.__class__.__name__, self.error)
