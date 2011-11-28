@@ -6,8 +6,8 @@ import logging
 from errors import SaHpiError
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.StreamHandler())
 if 'PYHPI_DEBUG' in os.environ:
+    logger.addHandler(logging.StreamHandler())
     logger.setLevel(logging.DEBUG)
 
 # http://code.activestate.com/recipes/576415/
