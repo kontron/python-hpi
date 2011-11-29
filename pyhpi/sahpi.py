@@ -103,6 +103,8 @@ def _aligned(fields):
         #print "%s at offset %d" % (n, size)
         offset += sizeof(t)
 
+        result.append((n, t))
+
         missing = sizeof(t) % a
         if missing != 0:
             #print "appending %d bytes after %s (offset=%d align=%d)" % (missing, n,
@@ -110,7 +112,6 @@ def _aligned(fields):
             result.append(('', c_char * missing))
             offset += missing
 
-        result.append((n, t))
     return result
 
 ####
