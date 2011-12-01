@@ -33,6 +33,13 @@ class TextBuffer(BaseHpiObject):
             self.language = SAHPI_LANG_UNDEF
             self.data = data
 
+    def from_string(self, s):
+        self.type = SAHPI_TL_TYPE_TEXT
+        self.language = SAHPI_LANG_UNDEF
+        self.data = str(s)
+
+        return self
+
     def from_ctype(self, s):
         """Fills this TextBuffer from a SaHpiTextBufferT C-structure."""
         BaseHpiObject.from_ctype(self, s)
@@ -42,10 +49,7 @@ class TextBuffer(BaseHpiObject):
 
         self.type = s.DataType.value
         self.language = s.Language.value
-        data = array('B', s.Data[:]).tostring()
-        pos = data.find('\x00')
-        if pos != -1:
-            data = data[:pos]
+        data = array('B', s.Data[:]).tostring().rstrip('\x00')
         if self.type == SAHPI_TL_TYPE_TEXT:
             self.data = data.decode('ascii')
         else:
