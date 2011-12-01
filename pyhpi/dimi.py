@@ -16,7 +16,7 @@ class DimiInfo(BaseHpiObject):
 class DimiTestParameterDefinition(BaseHpiObject):
     def from_ctype(self, s):
         BaseHpiObject.from_ctype(self, s)
-        self.name = array.array('B', s.ParamName).tostring()
+        self.name = array.array('B', s.ParamName).tostring().rstrip('\x00')
         self.info = TextBuffer().from_ctype(s.ParamInfo)
         self.type = s.ParamType.value
 
