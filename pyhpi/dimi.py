@@ -170,13 +170,15 @@ class Dimi(object):
         self.session = session
         self.resource = resource
         self._as_parameter_ = SaHpiDimiNumT(dimi_num)
+        self._test_list = None
+        self._last_update_count = 0
 
     def info(self):
         info = SaHpiDimiInfoT();
         saHpiDimiInfoGet(self.session, self.resource, self, byref(info))
         return DimiInfo().from_ctype(info)
 
-    def test_list(self):
+    def _update_test_list(self):
         tests = list()
 
         retries = 3
@@ -205,4 +207,14 @@ class Dimi(object):
         else:
             raise RetriesExceededError()
 
-        return tests
+        self._test_list = tests
+
+    def get_test_by_num(self, test_num):
+        return self.test_list()[test_num]
+
+    def test_list(self):
+        if (self._test_list is None
+                or self._last_update_count < self.info().update_counter):
+            self._update_test_list()
+
+        return self._test_list
