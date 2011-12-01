@@ -1,3 +1,4 @@
+import logging
 from array import array
 
 from sahpi import *
@@ -7,6 +8,7 @@ from utils import BaseHpiObject, TextBuffer
 from entity import EntityPath
 from errors import RetriesExceededError
 
+logger = logging.getLogger(__name__)
 
 class Guid(BaseHpiObject):
     def from_ctype(self, s):
@@ -192,18 +194,22 @@ class Resource(object):
         return self._rdrs
 
     def _update_rdr_repository(self, max_retries=3):
+        logger.debug('updating rdr repository (retries=%d)', max_retries)
         update_count = self.rdr_update_count()
         retries = 0
         if self._rdrs is None:
             self._rdrs = list()
         while retries < max_retries:
+            logger.debug('retry #%d', retries)
             del self._rdrs[:]
             id = SaHpiEntryIdT(SAHPI_FIRST_ENTRY)
             nextid = SaHpiEntryIdT()
             while id.value != SAHPI_LAST_ENTRY:
-                rdr = SaHpiRdrT()
-                saHpiRdrGet(self.session, self, id, byref(nextid), byref(rdr))
-                self._rdrs.append(Rdr().from_ctype(rdr))
+                _rdr = SaHpiRdrT()
+                saHpiRdrGet(self.session, self, id, byref(nextid), byref(_rdr))
+                rdr = Rdr().from_ctype(_rdr)
+                logger.debug('Fetched RDR %s', rdr)
+                self._rdrs.append(rdr)
                 id.value = nextid.value
             # see if rdr update count is still the same
             if update_count == self.rdr_update_count():
@@ -216,7 +222,7 @@ class Resource(object):
     @property
     def rpt(self):
         if self._rpt is None:
-            self._rpt = self.session.get_rpt_entry(self._as_parameter_.value)
+            self._rpt = self.session.get_rpt_entry_by_resource(self)
         return self._rpt
 
 UNSPECIFIED_RESOURCE = Resource(None).from_id(SAHPI_UNSPECIFIED_RESOURCE_ID)
