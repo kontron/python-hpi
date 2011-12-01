@@ -57,6 +57,13 @@ class Entity(BaseHpiObject):
 
         return self
 
+    def __cmp__(self, other):
+        print self.type, other.type
+        print self.location, other.location
+        if self.type != other.type:
+            return cmp(self.type, other.type)
+        return cmp(self.location, other.location)
+
     def __str__(self):
         return '{%s, %d}' % (self.typestring, self.location)
 
@@ -94,6 +101,17 @@ class EntityPath(BaseHpiObject):
 
     def __getitem__(self, a):
         return self.entries[a]
+
+    def __cmp__(self, other):
+        if len(other) != len(self.entries):
+            return cmp(len(self), len(other))
+        for (i,e) in enumerate(self.entries):
+            print e, other[i]
+            print type(e)
+            print dir(e)
+            if e != other[i]:
+                return cmp(e, other[i])
+        return 0
 
     def from_string(self, s):
         # XXX do it more elegant :)
