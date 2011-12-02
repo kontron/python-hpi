@@ -65,7 +65,7 @@ class TextBuffer(BaseHpiObject):
         t.DataType = SaHpiTextTypeT(self.type)
         t.Language = SaHpiLanguageT(self.language)
         t.DataLength = SaHpiUint8T(len(self.data))
-        data = array('B', self.data).tolist()
+        data = array('B', str(self.data)).tolist()
         t.Data = (SaHpiUint8T * SAHPI_MAX_TEXT_BUFFER_LENGTH)(*data)
         return t
 

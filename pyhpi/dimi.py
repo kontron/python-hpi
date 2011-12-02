@@ -63,7 +63,8 @@ class DimiTestParameter(BaseHpiObject):
         if len(self.name) > 20:
             raise EncodingError('parameter name too long')
         t = SaHpiDimiTestVariableParamsT()
-        t.ParamName[:len(self.name)] = array.array('B', self.name).tolist()
+        t.ParamName[:len(self.name)] = \
+                array.array('B', str(self.name)).tolist()
         t.ParamType = self.type
         if self.type == SAHPI_DIMITEST_PARAM_TYPE_BOOLEAN:
             t.Value.parambool = SaHpiBoolT(self.value)
