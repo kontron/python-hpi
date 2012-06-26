@@ -2187,6 +2187,33 @@ sahpi_functions = (
             (SaHpiResourceIdT, 'ResourceId'),
         ]
     ),
+    # Events
+    ('saHpiSubscribe',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+        ]
+    ),
+    ('saHpiUnsubscribe',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+        ]
+    ),
+    ('saHpiEventGet',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiTimeoutT, 'Timeout'),
+            (SaHpiEventT, '*Event'),
+            (SaHpiRdrT, '*Rdr'),
+            (SaHpiRptEntryT, '*RptEntry'),
+            (SaHpiEvtQueueStatusT, '*EventQueueStatus'),
+        ]
+    ),
+    ('saHpiEventAdd',
+        [
+            (SaHpiSessionIdT, 'SessionId'),
+            (SaHpiEventT, '*EvtEntry'),
+        ]
+    ),
     # Resource
     ('saHpiRdrGet',
         [

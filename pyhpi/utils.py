@@ -92,3 +92,6 @@ def enumeration_name(enum_cls, value):
 
 dimi_test_status_str = partial(enumeration_name, SaHpiDimiTestRunStatusT)
 fumi_upgrade_status_str = partial(enumeration_name, SaHpiFumiUpgradeStatusT)
+severity_str = partial(enumeration_name, SaHpiSeverityT)
+event_type_str = partial(enumeration_name, SaHpiEventTypeT)
+resource_event_type_str = partial(enumeration_name, SaHpiResourceEventTypeT)
