@@ -5,12 +5,14 @@ from resource import Resource
 from domain import UNSPECIFIED_DOMAIN
 from resource import RptEntry
 from errors import SaHpiError
+from event import EventListener
 
 logger = logging.getLogger(__name__)
 
 class Session(object):
     def __init__(self):
         self._as_parameter_ = SaHpiSessionIdT(0)
+        self.event_listener = None
 
     def open(self, domain=UNSPECIFIED_DOMAIN, security=None):
         logger.info('Open session for domain %d' % (domain.id,))
@@ -18,6 +20,8 @@ class Session(object):
 
     def close(self):
         logger.info('Close session')
+        if self.event_listener is not None:
+            self.event_listener.unsubscribe()
         saHpiSessionClose(self)
 
     def discover(self):
@@ -30,7 +34,7 @@ class Session(object):
 
     def get_rpt_entry_by_resource(self, res):
         entry = SaHpiRptEntryT()
-        saHpiEntryGetByResourceId(self, res, byref(entry))
+        saHpiRptEntryGetByResourceId(self, res, byref(entry))
         return RptEntry().from_ctype(entry)
 
     def resources(self):
@@ -49,6 +53,10 @@ class Session(object):
                     break
                 else:
                     raise
+
+    def attach_event_listener(self):
+        self.event_listener = EventListener(self)
+        self.event_listener.subscribe()
 
     def resources_list(self):
         return list(self.resources())

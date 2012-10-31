@@ -97,15 +97,29 @@ class EventListener(object):
     def unsubscribe(self):
         saHpiUnsubscribe(self.session)
 
-    def get(self, timeout=SAHPI_TIMEOUT_BLOCK):
+    def get(self, timeout=0):
+        if timeout == 0:
+            timeout = SAHPI_TIMEOUT_IMMEDIATE
+        elif timeout == -1:
+            timeout = SAHPI_TIMEOUT_BLOCK
+        else:
+            timeout = int(timeout * 1000000000)
+
         timeout = SaHpiTimeoutT(timeout)
         event = SaHpiEventT()
         rdr = SaHpiRdrT()
         rpt_entry = SaHpiRptEntryT()
         queue_status = SaHpiEvtQueueStatusT()
-        saHpiEventGet(self.session, timeout, byref(event), None, None, None)
-        #saHpiEventGet(self.session, timeout, byref(event), byref(rdr),
-        #        byref(rpt_entry), byref(queue_status))
+        try:
+            saHpiEventGet(self.session, timeout, byref(event), byref(rdr),
+                    byref(rpt_entry), byref(queue_status))
+        except SaHpiError, e:
+            if (timeout.value == SAHPI_TIMEOUT_IMMEDIATE
+                    and e.errno == SA_ERR_HPI_TIMEOUT):
+                # no event in queue
+                return None
+            else:
+                raise
 
         event_cls = Event.class_factory(event)
         return event_cls().from_ctype(event)
