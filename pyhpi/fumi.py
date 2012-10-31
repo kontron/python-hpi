@@ -152,3 +152,6 @@ class Fumi(object):
 
     def start_activation(self, logical=True):
         saHpiFumiActivateStart(self.session, self.resource, self, logical)
+
+    def start_rollback(self):
+        saHpiFumiRollbackStart(self.session, self.resource, self)
