@@ -25,6 +25,16 @@ def main():
             description = 'Pure python HPI library',
             author_email = 'michael.walle@kontron.com',
             packages = find_packages(exclude='test'),
+            license = 'LGPLv2+',
+            classifiers = [
+                'Development Status :: 4 - Beta',
+                'License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)',
+                'Natural Language :: English',
+                'Operating System :: OS Independent',
+                'Programming Language :: Python :: 2',
+                'Programming Language :: Python :: 2.7',
+                'Topic :: Software Development :: Libraries :: Python Modules',
+            ],
     )
 
 if __name__ == '__main__':
