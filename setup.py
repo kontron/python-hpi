@@ -4,6 +4,7 @@ from setuptools import setup, find_packages
 from subprocess import Popen, PIPE
 
 def get_git_version():
+    try:
         p = Popen(['git', 'describe', '--tags', '--always', '--dirty'],
                 stdout=PIPE, stderr=PIPE)
         p.stderr.close()
